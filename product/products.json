@@ -1,0 +1,19 @@
+{
+  "products": [
+    {
+      "uuid": 1,
+      "product": "Bola de basquete",
+      "price": 22.5
+    },
+    {
+      "uuid": 2,
+      "product": "Raquete de tenis",
+      "price": 50
+    },
+    {
+      "uuid": 3,
+      "product": "Chuteira Nike",
+      "price": 99
+    }
+  ]
+}
