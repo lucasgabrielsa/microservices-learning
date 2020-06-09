@@ -1,11 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"io/ioutil"
 	"net/http"
 	"os"
-	"github.com/gorilla/mux"
 )
 
 type Product struct {
@@ -15,7 +16,7 @@ type Product struct {
 }
 
 type Products struct {
-	Product []Product
+	Products []Product
 }
 
 func loadData() []byte {
@@ -38,12 +39,20 @@ func getProductById(w http.ResponseWriter, r * http.Request) {
 	vars := mux.Vars(r)
 	data := loadData()
 
-	products := loadData();
-	w.Write([]byte(products))
+	var products Products
+	json.Unmarshal(data, &products)
+
+	for _, v := range products.Products {
+		if v.Uuid == vars["id"] {
+			product, _ := json.Marshal(v)
+			w.Write([]byte(product))
+		}
+	}
 }
 
 func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/products", ListProducts)
+	r.HandleFunc("/products/{id}", getProductById)
 	http.ListenAndServe(":8081", r)
 }
