@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Checkout - Finalizar compra</title>
+</head>
+<body>
+    <h1>Finalizar Compra</h1>
+    <h2>Produto: {{.Product}}</h2>
+    <h3>Total: {{.Price}}</h3>
+
+    <form action="/finish" method="post">
+        <input type="hidden" name="product_id" value="{{.UUID}}"/>
+        Name: <input type="text" name="name"><br>
+        Email: <input type="text" name="email"><br>
+        Telefone: <input type="text" name="phone"><br>
+        <button>Finalizar compra</button>
+    </form>
+</body>
+</html>

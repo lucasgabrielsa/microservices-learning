@@ -10,9 +10,9 @@ import (
 )
 
 type Product struct {
-	Uuid string `json:"uuid"`
-	Product string `json:"product"`
-	Price float64 `json:"price, string"`
+	Uuid    string  `json:"uuid"`
+	Product string  `json:"product"`
+	Price   float64 `json:"price,string"`
 }
 
 type Products struct {
@@ -22,7 +22,7 @@ type Products struct {
 func loadData() []byte {
 	jsonFile, err := os.Open("products.json")
 	if err != nil {
-		fmt.Println(err.Error())
+		fmt.Println("erro: ",err.Error())
 	}
 	defer jsonFile.Close()
 
@@ -30,12 +30,12 @@ func loadData() []byte {
 	return data
 }
 
-func ListProducts(w http.ResponseWriter, r * http.Request) {
-	products := loadData();
+func ListProducts(w http.ResponseWriter, r *http.Request) {
+	products := loadData()
 	w.Write([]byte(products))
 }
 
-func getProductById(w http.ResponseWriter, r * http.Request) {
+func GetProductById(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	data := loadData()
 
@@ -53,6 +53,6 @@ func getProductById(w http.ResponseWriter, r * http.Request) {
 func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/products", ListProducts)
-	r.HandleFunc("/products/{id}", getProductById)
+	r.HandleFunc("/product/{id}", GetProductById)
 	http.ListenAndServe(":8081", r)
 }
