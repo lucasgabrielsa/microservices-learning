@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/streadway/amqp"
 	"io/ioutil"
 	"net/http"
 	"order.go/db"
@@ -27,15 +28,13 @@ type Order struct {
 	Status string  `json:"status"`
 	CreatedAt time.Time  `json:"created_at, string"`
 }
-
-
 var productsUrl string
 func init() {
 	productsUrl = os.Getenv("PRODUCT_URL")
 	fmt.Println("ProductsUrl="+ productsUrl)
 }
 
-func createOrder(payload []byte) {
+func createOrder(payload []byte) Order {
 	var order Order
 	json.Unmarshal(payload, &order)
 
@@ -44,6 +43,7 @@ func createOrder(payload []byte) {
 	order.Status = "pendente"
 	order.CreatedAt = time.Now()
 	saveOrder(order)
+	return order
 }
 
 func saveOrder(order Order) {
@@ -77,10 +77,15 @@ func main() {
 	in := make(chan []byte)
 
 	connection := queue.Connect()
-	queue.StartConsuming(connection, in)
+	queue.StartConsuming("checkout_queue", connection, in)
 
 	for payload := range in {
-		createOrder(payload)
+		notifyOrderCreated(createOrder(payload), connection)
 		fmt.Println(string(payload))
 	}
+}
+
+func notifyOrderCreated(order Order, channel *amqp.Channel) {
+	json, _ := json.Marshal(order)
+	queue.Notify(json, "order_ex", "", channel);
 }
