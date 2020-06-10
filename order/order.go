@@ -53,6 +53,12 @@ func saveOrder(order Order) {
 	if error != nil {
 		panic(error.Error())
 	}
+
+	val, err := connection.Get(order.Uuid).Result()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(order.Uuid, val)
 }
 
 func getProductById(id string) Product {
