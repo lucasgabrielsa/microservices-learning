@@ -1,6 +1,7 @@
 package main
 
 import (
+	"checkout/queue"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -16,6 +17,13 @@ type Product struct {
 	Price   float64 `json:"price,string"`
 }
 
+type Order struct {
+	 Name string `json:"name"`
+	 Email string `json:"email"`
+	 Phone string `json:"phone"`
+	 ProductId string `json:"product_id"`
+}
+
 var productsUrl string
 
 func init() {
@@ -25,7 +33,7 @@ func init() {
 
 func DisplayCheckout(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	fmt.Printf("Id informado: %s", vars["id"])
+	//fmt.Printf("Id informado: %s", vars["id"])
 	response, err := http.Get(productsUrl + "/product/" + vars["id"])
 	if err != nil {
 		fmt.Printf("The HTTP request failed with error %s\n", err)
@@ -39,9 +47,26 @@ func DisplayCheckout(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, product)
 }
 
+func Finish(w http.ResponseWriter, r *http.Request) {
+	var order Order
+	order.Name = r.FormValue("name")
+	order.Email = r.FormValue("email")
+	order.Phone = r.FormValue("phone")
+	order.ProductId = r.FormValue("product_id")
+
+	data, _ := json.Marshal(&order)
+	fmt.Println(string(data))
+
+	connection := queue.Connect()
+	queue.Notify(data, "checkout_ex", "", connection);
+
+	w.Write([]byte("Processou!"))
+}
+
 func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/product/{id}", DisplayCheckout)
+	r.HandleFunc("/finish", Finish)
 	http.ListenAndServe(":8083", r)
 }
 
