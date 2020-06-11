@@ -43,7 +43,7 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/", ListProducts)
 	r.HandleFunc("/product/{id}", ShowProduct)
-	http.ListenAndServe(":8082", r)
+	http.ListenAndServe(":8080", r)
 }
 
 func ListProducts(w http.ResponseWriter, r *http.Request) {

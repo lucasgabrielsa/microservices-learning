@@ -6,3 +6,6 @@ export RABBITMQ_DEFAULT_PORT="5672"
 export RABBITMQ_DEFAULT_VHOST="/"
 export RABBITMQ_CONSUMER_QUEUE="checkout_queue"
 export REDIS_HOST="localhost:6379"
+
+
+go run order.go -opt checkout 
